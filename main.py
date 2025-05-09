@@ -26,8 +26,6 @@ def home(request: Request, date: str = None):
         return templates.TemplateResponse("index.html",
                                           {"request": request, "slots": [], "date": "", "error": "يرجى اختيار التاريخ",
                                            "show_booked": False})
-    # if not date:
-    #     date = datetime.today().strftime("%Y-%m-%d")
     dt = datetime.strptime(date, "%Y-%m-%d")
     today = datetime.today().date()
     if dt.date() < today:
