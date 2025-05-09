@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>حجز موعد</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>احجز موعدك</h1>
+        <form method="get" action="/">
+            <label>اختر التاريخ:
+                <input type="date" name="date" value="{{ date }}">
+            </label>
+            <button type="submit">عرض المواعيد</button>
+        </form>
+
+        {% if error %}<p>{{ error }}</p>{% elif show_booked %}
+        <h2>المواعيد المحجوزة</h2>
+            {% for slot in slots %}
+                {% if not slot.available %}
+                <div class="booked-slot">
+                    <p><strong>{{ slot.time }}</strong> محجوز بواسطة {{ slot.booked_by.name }}</p>
+                    <form onsubmit="return updateSlot(event, '{{ date }}', '{{ slot.time }}', this)">
+                        <input type="text" name="name" value="{{ slot.booked_by.name }}" maxlength="50">
+                        <input type="text" name="email" value="{{ slot.booked_by.email }}" maxlength="100">
+                        <input type="text" name="company" value="{{ slot.booked_by.company }}" maxlength="50">
+                        <input type="text" name="country" value="{{ slot.booked_by.country }}" maxlength="50">
+                        <input type="text" name="whatsapp" value="{{ slot.booked_by.whatsapp }}" maxlength="50">
+                        <button type="submit">تعديل البيانات</button>
+                    </form>
+
+                    <form onsubmit="return deleteSlot(event, '{{ date }}', '{{ slot.time }}')">
+                        <button type="submit">حذف الموعد</button>
+                    </form>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+        <form onsubmit="submitBooking(event)">
+            <input type="hidden" name="date" value="{{ date }}">
+            <label>الاسم: <input name="name" required maxlength="50"></label>
+            <label>الإيميل: <input name="email" required maxlength="100"></label>
+            <label>الشركة: <input name="company" maxlength="50"></label>
+            <label>الدولة: <input name="country" maxlength="50"></label>
+            <label>رقم الواتساب: <input name="whatsapp" maxlength="50"></label>
+            <label>اختر وقت الموعد:
+                <select name="time">
+                    {% for slot in slots %}
+                        {% if slot.available %}
+                            <option value="{{ slot.time }}">{{ slot.time }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </label>
+            <button type="submit">احجز</button>
+        </form>
+
+        <form method="get" action="/show">
+            <input type="hidden" name="date" value="{{ date }}">
+            <button type="submit">عرض المواعيد المحجوزة</button>
+        </form>
+        {% endif %}
+    </div>
+
+</body>
+</html>

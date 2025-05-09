@@ -1,0 +1,61 @@
+body {
+    font-family: Arial, sans-serif;
+    direction: rtl;
+    text-align: center;
+    background-color: #121212;
+    color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 600px;
+    margin: 40px auto;
+    background: #1e1e1e;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+label, input, select, button {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 16px;
+    color: #f5f5f5;
+}
+
+input, select {
+    background-color: #2a2a2a;
+    border: 1px solid #444;
+    color: #f5f5f5;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #ff8800;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #e67600;
+}
+
+.booked-slot {
+    background-color: #2e2e2e;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #444;
+    border-radius: 5px;
+}
+
+.booked-slot form {
+    display: inline-block;
+    margin: 0 5px;
+}
