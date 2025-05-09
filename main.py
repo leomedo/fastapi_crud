@@ -10,7 +10,7 @@ from starlette.responses import JSONResponse
 from firebase_init import db
 from models import BookingRequest, UpdateRequest
 from redis_config import redis_client
-from utils import generate_daily_slots
+from utils import generate_daily_slots, rate_limit
 from datetime import datetime
 import uvicorn
 
@@ -108,7 +108,8 @@ async def show_booked_appointments(request: Request, date: str):
 
 
 @app.get("/get_all_slot", response_class=HTMLResponse)
-async def show_booked_appointments(date: str):
+@rate_limit
+async def show_booked_appointments(request: Request, date: str):
     cache_key = "appointments"
     cache_expire_time = 5
     cached_slots = redis_client.get(cache_key)
@@ -157,19 +158,24 @@ async def update_booking(data: UpdateRequest):
         return JSONResponse(content={"status": "not found"}, status_code=404)
 
     slots = doc.to_dict().get("slots", [])
+    found = False
     for slot in slots:
-        if data.booked_by:
-            print(data.booked_by.dict(exclude_unset=True))
-            for key, value in data.booked_by.dict(exclude_unset=True).items():
-                slot["booked_by"][key] = value
-        break
-    else:
+        if slot["time"] == data.time:
+            if data.booked_by:
+                print(data.booked_by.dict(exclude_unset=True))
+                for key, value in data.booked_by.dict(exclude_unset=True).items():
+                    slot["booked_by"][key] = value
+            found = True
+            break
+
+    if not found:
         return JSONResponse(content={"status": "slot not found"}, status_code=404)
+
     doc_ref.update({"slots": slots})
-    ########### Cach Delete ###########
+    ########### Cache Delete ###########
     redis_client.delete("appointments")
     return JSONResponse(content={"status": "updated"}, status_code=200)
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", reload=True)
+    uvicorn.run("main:app", reload=True, port=8000)
